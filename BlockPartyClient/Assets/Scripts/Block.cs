@@ -6,6 +6,7 @@ public class Block : MonoBehaviour
 	public enum BlockState
 	{
 		Idle,
+		Sliding,
 	}
 
 	public int X, Y;
@@ -14,8 +15,10 @@ public class Block : MonoBehaviour
 	public BlockState State;
 	BlockManager blockManager;
 	Grid grid;
-
-	// Use this for initialization
+	public BlockController.SlideDirection Direction;
+	public bool SlideFront;
+    
+    // Use this for initialization
 	void Start ()
 	{
 	
@@ -33,7 +36,29 @@ public class Block : MonoBehaviour
 		grid.AddBlock(x, y, this, GridElement.ElementState.Block);
 	}
 
-	// Update is called once per frame
+	public void StartSliding(BlockController.SlideDirection direction, bool slideFront)
+	{
+		State = BlockState.Sliding;
+		
+		Direction = direction;
+		
+		SlideFront = slideFront;
+		
+		grid.ChangeState(X, Y, this, GridElement.ElementState.Immutable);
+	}
+	
+	public void FinishSliding(int slideX)
+	{
+		State = BlockState.Idle;
+		
+		Direction = BlockController.SlideDirection.None;
+		
+        X = slideX;
+        
+        grid.AddBlock(X, Y, this, GridElement.ElementState.Block);
+    }
+
+    // Update is called once per frame
 	void Update ()
 	{
 	

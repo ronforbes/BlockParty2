@@ -7,6 +7,8 @@ public class GridElement
 	{
 		Empty,
 		Block,
+		Immutable,
+		Falling,
 	}
 
 	public enum ElementType
@@ -100,7 +102,14 @@ public class Grid : MonoBehaviour {
 		return grid[x, y].Element as Block;
     }
 
-	public void AddBlock(int x, int y, Block block, GridElement.ElementState state)
+	public void ChangeState(int x, int y, Object element, GridElement.ElementState state)
+	{
+		DebugUtilities.Assert(grid[x, y].Element == element);
+		
+		grid[x, y].State = state;
+    }
+
+    public void AddBlock(int x, int y, Block block, GridElement.ElementState state)
 	{
 		DebugUtilities.Assert(x < Width);
 		DebugUtilities.Assert(y < Height);
@@ -111,6 +120,15 @@ public class Grid : MonoBehaviour {
 		grid[x, y].State = state;
     }
 
+	public void Remove(int x, int y, Block block)
+	{
+		DebugUtilities.Assert(grid[x, y].Element == block);
+		
+		grid[x, y].Element = null;
+		grid[x, y].Type = GridElement.ElementType.Empty;
+		grid[x, y].State = GridElement.ElementState.Empty;
+    }
+    
     // Update is called once per frame
     void Update () {
 	
