@@ -7,6 +7,7 @@ public class Block : MonoBehaviour
 	{
 		Idle,
 		Sliding,
+		Falling,
 	}
 
 	public int X, Y;
@@ -17,6 +18,9 @@ public class Block : MonoBehaviour
 	Grid grid;
 	public BlockController.SlideDirection Direction;
 	public bool SlideFront;
+	bool startedFalling;
+	public float FallElapsed;
+	public const float FallDuration = 0.1f;
     
     // Use this for initialization
 	void Start ()
@@ -58,9 +62,107 @@ public class Block : MonoBehaviour
         grid.AddBlock(X, Y, this, GridElement.ElementState.Block);
     }
 
-    // Update is called once per frame
-	void Update ()
+	public void StartFalling(/*Chain chain = null*/)
 	{
-	
-	}
+		if (State != BlockState.Idle)
+			return;
+		
+		// signal the falling state
+		startedFalling = true;
+		
+		FallElapsed = FallDuration;
+		
+		grid.ChangeState(X, Y, this, GridElement.ElementState.Falling);
+		
+		/*if (chain != null)
+		{
+			BeginChainInvolvement(chain);
+		}*/
+		
+		if (Y < Grid.Height - 1)
+		{
+			if (grid.StateAt(X, Y + 1) == GridElement.ElementState.Block)
+				grid.BlockAt(X, Y + 1).StartFalling(/*Chain*/);
+        }
+    }
+
+    // Update is called once per frame
+    void Update ()
+    {
+        // don't update the creep row
+        if (Y == 0)
+            return;
+        
+        if (startedFalling)
+		{
+			State = BlockState.Falling;
+			
+			startedFalling = false;
+        }
+
+		switch (State)
+		{
+		case BlockState.Idle:
+			// we may have to fall
+			if (grid.StateAt(X, Y - 1) == GridElement.ElementState.Empty)
+				StartFalling();
+			break;
+			
+		case BlockState.Falling:
+			FallElapsed += Time.deltaTime;
+			
+			if (FallElapsed >= FallDuration)
+			{
+				if (grid.StateAt(X, Y - 1) == GridElement.ElementState.Empty)
+				{
+					// shift our grid position down to the next row
+					Y--;
+					FallElapsed = 0.0f;
+					
+					grid.Remove(X, Y + 1, this);
+					grid.AddBlock(X, Y, this, GridElement.ElementState.Falling);
+				}
+				else
+				{
+					// we've landed
+					
+					// change our state
+					State = BlockState.Idle;
+					
+					// update the grid
+					grid.ChangeState(X, Y, this, GridElement.ElementState.Block);
+					
+					// register for elimination checking
+					//grid.RequestMatchCheck(this);
+				}
+			}
+			break;
+		/*case BlockState.Dying:
+			DieElapsed += Time.deltaTime;
+			
+			if (DieElapsed >= DieDuration)
+			{
+				// change the game state
+				blockManager.DyingBlockCount--;
+				
+				// update the grid
+				grid.Remove(X, Y, this);
+				
+				// tell our upward neighbor to fall
+				if (Y < Grid.PlayHeight - 1)
+				{
+					if (grid.StateAt(X, Y + 1) == GridElement.ElementState.Block)
+						grid.BlockAt(X, Y + 1).StartFalling(Chain);
+				}
+				
+				Chain.DecrementInvolvement();
+				
+				ParticleManager particleManager = FindObjectOfType<ParticleManager>();
+                    particleManager.CreateParticles(X, Y, Chain.Magnitude, Type);
+                    
+                    blockManager.DeleteBlock(this);
+                }
+                break;*/
+        }
+    }
 }
