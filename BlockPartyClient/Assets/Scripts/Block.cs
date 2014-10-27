@@ -3,9 +3,17 @@ using System.Collections;
 
 public class Block : MonoBehaviour
 {
+	public enum BlockState
+	{
+		Idle,
+	}
+
 	public int X, Y;
 	public int Type;
 	public const int TypeCount = 5;
+	public BlockState State;
+	BlockManager blockManager;
+	Grid grid;
 
 	// Use this for initialization
 	void Start ()
@@ -19,7 +27,10 @@ public class Block : MonoBehaviour
 		Y = y;
 		Type = type;
 
-		transform.position = new Vector3(X, Y, 0.0f);
+		blockManager = GameObject.Find("Game").GetComponent<BlockManager>();
+		grid = GameObject.Find("Game").GetComponent<Grid>();
+
+		grid.AddBlock(x, y, this, GridElement.ElementState.Block);
 	}
 
 	// Update is called once per frame
