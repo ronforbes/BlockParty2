@@ -176,11 +176,11 @@ public class BlockController : MonoBehaviour
 				
 				if (leftBlock)
 				{
-					//Grid.RequestMatchCheck(leftBlock);
+					Grid.RequestMatchCheck(leftBlock);
 				}
 				if (rightBlock)
 				{
-					//Grid.RequestMatchCheck(rightBlock);
+					Grid.RequestMatchCheck(rightBlock);
 				}
 				
 				leftBlock = null;

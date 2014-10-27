@@ -60,6 +60,17 @@ public class BlockManager : MonoBehaviour {
         }
     }
     
+	public bool Match(Block block1, Block block2)
+	{
+		return block1.Type == block2.Type;
+	}
+
+    public void DeleteBlock(Block block)
+	{
+		Blocks.Remove(block);
+		Destroy(block.gameObject);
+	}
+
     // Update is called once per frame
     void Update () {
 	

@@ -8,6 +8,7 @@ public class Block : MonoBehaviour
 		Idle,
 		Sliding,
 		Falling,
+		Dying,
 	}
 
 	public int X, Y;
@@ -21,6 +22,9 @@ public class Block : MonoBehaviour
 	bool startedFalling;
 	public float FallElapsed;
 	public const float FallDuration = 0.1f;
+	public float DieElapsed;
+	public const float DieDuration = 1.5f;
+	public Vector2 DyingAxis;
     
     // Use this for initialization
 	void Start ()
@@ -86,6 +90,21 @@ public class Block : MonoBehaviour
         }
     }
 
+	public void StartDying(/*Chain chain*/)
+	{
+		// change the game state
+		//blockManager.DyingBlockCount++; PUT THIS IN CREEP MANAGER (BLOCK RAISER)
+		
+		//BeginChainInvolvement(chain);
+		
+		State = BlockState.Dying;
+		DieElapsed = 0.0f;
+		
+		grid.ChangeState(X, Y, this, GridElement.ElementState.Immutable);
+		
+		DyingAxis = Random.insideUnitCircle;
+    }
+
     // Update is called once per frame
     void Update ()
     {
@@ -133,36 +152,36 @@ public class Block : MonoBehaviour
 					grid.ChangeState(X, Y, this, GridElement.ElementState.Block);
 					
 					// register for elimination checking
-					//grid.RequestMatchCheck(this);
+					grid.RequestMatchCheck(this);
 				}
 			}
 			break;
-		/*case BlockState.Dying:
+		case BlockState.Dying:
 			DieElapsed += Time.deltaTime;
 			
 			if (DieElapsed >= DieDuration)
 			{
 				// change the game state
-				blockManager.DyingBlockCount--;
+				//blockManager.DyingBlockCount--; PUT THIS IN CREEP MANAGER (TO BE CALLED BLOCK RAISER
 				
 				// update the grid
 				grid.Remove(X, Y, this);
 				
 				// tell our upward neighbor to fall
-				if (Y < Grid.PlayHeight - 1)
+				if (Y < Grid.Height - 1)
 				{
 					if (grid.StateAt(X, Y + 1) == GridElement.ElementState.Block)
-						grid.BlockAt(X, Y + 1).StartFalling(Chain);
+						grid.BlockAt(X, Y + 1).StartFalling(/*Chain*/);
 				}
 				
-				Chain.DecrementInvolvement();
+				//Chain.DecrementInvolvement();
 				
-				ParticleManager particleManager = FindObjectOfType<ParticleManager>();
-                    particleManager.CreateParticles(X, Y, Chain.Magnitude, Type);
+				//ParticleManager particleManager = FindObjectOfType<ParticleManager>();
+                //particleManager.CreateParticles(X, Y, Chain.Magnitude, Type);
                     
-                    blockManager.DeleteBlock(this);
-                }
-                break;*/
+                blockManager.DeleteBlock(this);
+            }
+            break;
         }
     }
 }

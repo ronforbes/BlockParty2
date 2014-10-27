@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GridElement
 {
@@ -22,13 +23,27 @@ public class GridElement
 	public Object Element;
 }
 
+public class MatchCheck
+{
+	public Block Block;
+	//public Chain Chain;
+	
+	public MatchCheck(Block block/*, Chain chain*/)
+	{
+		Block = block;
+		//Chain = chain;
+	}
+}
+
 public class Grid : MonoBehaviour {
 	public const int Width = 6;
 	public const int Height = 45;
 	public const int SafeHeight = 12;
 	public const int Size = Width * Height;
+	public const int MinimumMatchLength = 3;
 	public BlockManager BlockManager;
 	GridElement[,] grid = new GridElement[Grid.Width, Grid.Height];
+	List<MatchCheck> matchChecks = new List<MatchCheck>(BlockManager.BlockCapacity);
 	int topOccupiedRow = 0;
 	int topEffectiveRow = 0;
 
@@ -90,26 +105,7 @@ public class Grid : MonoBehaviour {
         topEffectiveRow = topOccupiedRow;
     }
 
-	public GridElement.ElementState StateAt(int x, int y)
-	{
-		return grid[x, y].State;
-	}
-	
-	public Block BlockAt(int x, int y)
-	{
-		DebugUtilities.Assert(grid[x, y].Type == GridElement.ElementType.Block);
-		
-		return grid[x, y].Element as Block;
-    }
-
-	public void ChangeState(int x, int y, Object element, GridElement.ElementState state)
-	{
-		DebugUtilities.Assert(grid[x, y].Element == element);
-		
-		grid[x, y].State = state;
-    }
-
-    public void AddBlock(int x, int y, Block block, GridElement.ElementState state)
+	public void AddBlock(int x, int y, Block block, GridElement.ElementState state)
 	{
 		DebugUtilities.Assert(x < Width);
 		DebugUtilities.Assert(y < Height);
@@ -118,19 +114,205 @@ public class Grid : MonoBehaviour {
 		grid[x, y].Element = block;
 		grid[x, y].Type = GridElement.ElementType.Block;
 		grid[x, y].State = state;
-    }
-
+	}
+	
 	public void Remove(int x, int y, Block block)
 	{
 		DebugUtilities.Assert(grid[x, y].Element == block);
 		
 		grid[x, y].Element = null;
 		grid[x, y].Type = GridElement.ElementType.Empty;
-		grid[x, y].State = GridElement.ElementState.Empty;
+        grid[x, y].State = GridElement.ElementState.Empty;
     }
-    
+
+    public GridElement.ElementState StateAt(int x, int y)
+	{
+		return grid[x, y].State;
+	}
+
+	public void ChangeState(int x, int y, Object element, GridElement.ElementState state)
+	{
+		DebugUtilities.Assert(grid[x, y].Element == element);
+		
+		grid[x, y].State = state;
+    }
+
+    public Block BlockAt(int x, int y)
+	{
+		DebugUtilities.Assert(grid[x, y].Type == GridElement.ElementType.Block);
+		
+		return grid[x, y].Element as Block;
+    }
+
+	public bool MatchAt(int x, int y, Block block)
+	{
+		DebugUtilities.Assert(grid[x, y].State == GridElement.ElementState.Block);
+		
+		return BlockManager.Match(block, grid[x, y].Element as Block);
+    }
+
+	public void RequestMatchCheck(Block block/*, Chain chain = null*/)
+	{
+		matchChecks.Add(new MatchCheck(block/*, chain*/));
+	}
+	
     // Update is called once per frame
     void Update () {
-	
-	}
+		// process elimination check requests
+		while (matchChecks.Count > 0)
+		{
+			MatchCheck check = matchChecks[0];
+			
+			// ensure that the block is still static
+			if (check.Block.State != Block.BlockState.Idle)
+				continue;
+			
+			// use the block's combo, if it has one
+			CheckMatch(check.Block/*, check.Block.Chain != null ? check.Block.Chain : check.Chain*/);
+			
+			matchChecks.Remove(check);
+		}
+		
+		// update top occupied row
+		topOccupiedRow++;
+		bool flag = true;
+		do
+		{
+			topOccupiedRow--;
+			for (int x = 0; x < Grid.Width; x++)
+			{
+				if (StateAt(x, topOccupiedRow) != GridElement.ElementState.Empty)
+				{
+					flag = false;
+					break;
+				}
+			}
+		} while(flag);
+		
+		// update top effective row
+		topEffectiveRow++;
+		flag = true;
+		do
+		{
+			topEffectiveRow--;
+			for (int x = 0; x < Grid.Width; x++)
+			{
+				if (grid[x, topEffectiveRow].Type != GridElement.ElementType.Empty)
+				{
+					flag = false;
+					break;
+                }
+            }
+        } while(flag);
+    }
+
+	void CheckMatch(Block block/*, Chain chain*/)
+	{
+		int x = block.X;
+		int y = block.Y;
+		
+		// look in four directions for matching lines
+		
+		int left = x;
+		while (left > 0)
+		{
+			if (StateAt(left - 1, y) != GridElement.ElementState.Block)
+				break;
+			if (!MatchAt(left - 1, y, block))
+				break;
+			left--;
+		}
+		
+		int right = x + 1;
+		while (right < Width)
+		{
+			if (StateAt(right, y) != GridElement.ElementState.Block)
+				break;
+			if (!MatchAt(right, y, block))
+				break;
+			right++;
+		}
+		
+		int bottom = y;
+		while (bottom > 1)
+		{
+			if (StateAt(x, bottom - 1) != GridElement.ElementState.Block)
+				break;
+			if (!MatchAt(x, bottom - 1, block))
+				break;
+			bottom--;
+		}
+		
+		int top = y + 1;
+		while (top < Height)
+		{
+			if (StateAt(x, top) != GridElement.ElementState.Block)
+				break;
+			if (!MatchAt(x, top, block))
+				break;
+			top++;
+		}
+		
+		int width = right - left;
+		int height = top - bottom;
+		int magnitude = 0;
+		bool horizontalPattern = false;
+		bool verticalPattern = false;
+		
+		if (width >= MinimumMatchLength)
+		{
+			horizontalPattern = true;
+			magnitude += width;
+		}
+		
+		if (height >= MinimumMatchLength)
+		{
+			verticalPattern = true;
+			magnitude += height;
+		}
+		
+		if (!horizontalPattern && !verticalPattern)
+		{
+			//block.EndChainInvolvement(chain);
+			return;
+		}
+		
+		/*if (chain == null)
+		{
+			chain = ChainManager.CreateChain();
+		}*/
+		
+		// if pattern matches both directions
+		if (horizontalPattern && verticalPattern)
+			magnitude--;
+		
+		// kill the pattern's blocks and look for touching garbage
+		block.StartDying(/*chain*/);
+		
+		if (horizontalPattern)
+		{
+			// kill the pattern's blocks
+			for (int killX = left; killX < right; killX++)
+			{
+				if (killX != x)
+				{
+					BlockAt(killX, y).StartDying(/*chain*/);
+				}
+			}
+		}
+		
+		if (verticalPattern)
+		{
+			// kill the pattern's blocks
+			for (int killY = bottom; killY < top; killY++)
+			{
+				if (killY != y)
+				{
+					BlockAt(x, killY).StartDying(/*chain*/);
+                }
+            }
+        }
+        
+        //chain.ReportMatch(magnitude, block);
+    }
 }
