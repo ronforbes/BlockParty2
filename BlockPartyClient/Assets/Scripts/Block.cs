@@ -17,7 +17,7 @@ public class Block : MonoBehaviour
 	public BlockState State;
 	BlockManager blockManager;
 	Grid grid;
-	public BlockController.SlideDirection Direction;
+	public BlockSlider.SlideDirection Direction;
 	public bool SlideFront;
 	bool startedFalling;
 	public float FallElapsed;
@@ -44,7 +44,7 @@ public class Block : MonoBehaviour
 		grid.AddBlock(x, y, this, GridElement.ElementState.Block);
 	}
 
-	public void StartSliding(BlockController.SlideDirection direction, bool slideFront)
+	public void StartSliding(BlockSlider.SlideDirection direction, bool slideFront)
 	{
 		State = BlockState.Sliding;
 		
@@ -59,7 +59,7 @@ public class Block : MonoBehaviour
 	{
 		State = BlockState.Idle;
 		
-		Direction = BlockController.SlideDirection.None;
+		Direction = BlockSlider.SlideDirection.None;
 		
         X = slideX;
         

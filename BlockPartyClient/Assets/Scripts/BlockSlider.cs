@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BlockController : MonoBehaviour 
+public class BlockSlider : MonoBehaviour 
 {
 	public enum SlideDirection
 	{
