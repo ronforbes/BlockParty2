@@ -92,10 +92,10 @@ public class Grid : MonoBehaviour {
 				
 				// setup creep creation state
 				if (y == 2)
-					BlockManager.SecondToLastRowCreepTypes[x] = type;
+					BlockManager.SecondToLastNewRowTypes[x] = type;
 				
 				if (y == 1)
-					BlockManager.LastRowCreepTypes[x] = type;
+					BlockManager.LastNewRowTypes[x] = type;
                 
                 // create the block
                 BlockManager.CreateBlock(x, y, type);
@@ -314,5 +314,35 @@ public class Grid : MonoBehaviour {
         }
         
         //chain.ReportMatch(magnitude, block);
+    }
+
+	public bool ShiftUp()
+	{
+		if (topOccupiedRow == Height - 1)
+			return false;
+		
+		// shift the grid
+		for (int y = topOccupiedRow + 1; y >= 0; y--)
+		{
+			for (int x = 0; x < Width; x++)
+			{
+				grid[x, y + 1].Element = grid[x, y].Element;
+				grid[x, y + 1].Type = grid[x, y].Type;
+				grid[x, y + 1].State = grid[x, y].State;
+			}
+		}
+		
+		// otherwise the assert will tag us
+		for (int x = 0; x < Width; x++)
+		{
+			grid[x, 0].State = GridElement.ElementState.Empty;
+		}
+		
+		topOccupiedRow++;
+		topEffectiveRow++;
+		
+		BlockManager.ShiftUp();
+        
+        return true;
     }
 }

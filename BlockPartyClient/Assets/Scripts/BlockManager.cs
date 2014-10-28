@@ -6,18 +6,16 @@ public class BlockManager : MonoBehaviour {
 	public Block BlockPrefab;
 	public List<Block> Blocks = new List<Block>(BlockCapacity);
 	public const int BlockCapacity = Grid.Size;
-	public List<int> LastRowCreepTypes = new List<int>(Grid.Width);
-	public List<int> SecondToLastRowCreepTypes = new List<int>(Grid.Width);
-	int lastCreepType, secondToLastCreepType;
+	public List<int> LastNewRowTypes = new List<int>(Grid.Width);
+	public List<int> SecondToLastNewRowTypes = new List<int>(Grid.Width);
+	int lastNewBlockType = 0, secondToLastNewBlockType = 0;
 
 	// Use this for initialization
 	void Start () {
-		lastCreepType = secondToLastCreepType = 0;
-		
 		for (int x = 0; x < Grid.Width; x++)
 		{
-			LastRowCreepTypes.Add(0);
-			SecondToLastRowCreepTypes.Add(0);
+			LastNewRowTypes.Add(0);
+			SecondToLastNewRowTypes.Add(0);
         }
     }
     
@@ -33,42 +31,50 @@ public class BlockManager : MonoBehaviour {
 		block.Initialize(x, y, type);
 	}
 
-	public void CreateCreepRow()
+    public void CreateNewRow()
 	{
 		for (int x = 0; x < Grid.Width; x++)
 		{
 			int type = 0;
 			
-			if (LastRowCreepTypes.Count == 0)
-				LastRowCreepTypes = new List<int>(Grid.Width);
-			if (SecondToLastRowCreepTypes.Count == 0)
-				SecondToLastRowCreepTypes = new List<int>(Grid.Width);
+			if (LastNewRowTypes.Count == 0)
+				LastNewRowTypes = new List<int>(Grid.Width);
+			if (SecondToLastNewRowTypes.Count == 0)
+				SecondToLastNewRowTypes = new List<int>(Grid.Width);
 			
 			do
 			{
 				type = Random.Range(0, Block.TypeCount);
-			} while((type == lastCreepType && lastCreepType == secondToLastCreepType) ||
-			        (type == LastRowCreepTypes[x] && LastRowCreepTypes[x] == SecondToLastRowCreepTypes[x]));
+			} while((type == lastNewBlockType && lastNewBlockType == secondToLastNewBlockType) ||
+			        (type == LastNewRowTypes[x] && LastNewRowTypes[x] == SecondToLastNewRowTypes[x]));
 			
-			SecondToLastRowCreepTypes[x] = LastRowCreepTypes[x];
-			LastRowCreepTypes[x] = type;
+			SecondToLastNewRowTypes[x] = LastNewRowTypes[x];
+			LastNewRowTypes[x] = type;
 			
-			secondToLastCreepType = lastCreepType;
-            lastCreepType = type;
+			secondToLastNewBlockType = lastNewBlockType;
+            lastNewBlockType = type;
             
             CreateBlock(x, 0, type);
         }
     }
     
-	public bool Match(Block block1, Block block2)
-	{
-		return block1.Type == block2.Type;
-	}
-
-    public void DeleteBlock(Block block)
+	public void DeleteBlock(Block block)
 	{
 		Blocks.Remove(block);
 		Destroy(block.gameObject);
+    }
+
+    public void ShiftUp()
+	{
+		foreach (Block block in Blocks)
+		{
+			block.Y++;
+		}
+	}
+
+    public bool Match(Block block1, Block block2)
+	{
+		return block1.Type == block2.Type;
 	}
 
     // Update is called once per frame

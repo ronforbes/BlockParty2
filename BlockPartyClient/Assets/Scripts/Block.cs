@@ -17,6 +17,7 @@ public class Block : MonoBehaviour
 	public BlockState State;
 	BlockManager blockManager;
 	Grid grid;
+	BlockRaiser blockRaiser;
 	public BlockSlider.SlideDirection Direction;
 	public bool SlideFront;
 	bool startedFalling;
@@ -40,6 +41,7 @@ public class Block : MonoBehaviour
 
 		blockManager = GameObject.Find("Game").GetComponent<BlockManager>();
 		grid = GameObject.Find("Game").GetComponent<Grid>();
+		blockRaiser = GameObject.Find("Game").GetComponent<BlockRaiser>();
 
 		grid.AddBlock(x, y, this, GridElement.ElementState.Block);
 	}
@@ -93,7 +95,7 @@ public class Block : MonoBehaviour
 	public void StartDying(/*Chain chain*/)
 	{
 		// change the game state
-		//blockManager.DyingBlockCount++; PUT THIS IN CREEP MANAGER (BLOCK RAISER)
+		blockRaiser.DyingBlockCount++;
 		
 		//BeginChainInvolvement(chain);
 		
@@ -162,7 +164,7 @@ public class Block : MonoBehaviour
 			if (DieElapsed >= DieDuration)
 			{
 				// change the game state
-				//blockManager.DyingBlockCount--; PUT THIS IN CREEP MANAGER (TO BE CALLED BLOCK RAISER
+				blockRaiser.DyingBlockCount--;
 				
 				// update the grid
 				grid.Remove(X, Y, this);

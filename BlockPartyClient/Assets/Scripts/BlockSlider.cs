@@ -11,7 +11,7 @@ public class BlockSlider : MonoBehaviour
 	}
 	
 	public float SlideElapsed;
-	public float SlideDuration = 0.1f;
+	public const float SlideDuration = 0.1f;
 	public Grid Grid;
 	public Game Game;
 	bool sliding;
