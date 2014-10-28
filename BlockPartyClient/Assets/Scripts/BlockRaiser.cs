@@ -11,8 +11,12 @@ public class BlockRaiser : MonoBehaviour {
 	float raiseDelayElapsed;
 	float raiseDelaySpeed = 1.0f;
 	const float raiseDelayDuration = 1.0f;
+	float previousClickTime;
+	const float doubleClickSpeed = 0.5f;
+	bool advance, advanceTriggered;
+	const float advanceDelaySpeed = 100.0f;
 
-	// Use this for initialization
+    // Use this for initialization
 	void Start () {
 		RaiseElapsed = 0.0f;
 		raiseDelayElapsed = 0.0f;
@@ -54,23 +58,35 @@ public class BlockRaiser : MonoBehaviour {
             }
         }*/
 
-        /*if (advance || Controller.AdvanceCommand)
+		if (Input.GetMouseButtonDown(0))
+		{
+			if (Time.time - previousClickTime <= doubleClickSpeed)
+				advanceTriggered = true;
+			else
+				advanceTriggered = false;
+			
+			previousClickTime = Time.time;
+		}
+		else
+			advanceTriggered = false;
+
+        if (advance || advanceTriggered)
         {
-            if (creepDelaySpeed < advanceDelaySpeed)
+            if (raiseDelaySpeed < advanceDelaySpeed)
             {
-                creepDelayElapsed += advanceDelaySpeed * Time.deltaTime;
+                raiseDelayElapsed += advanceDelaySpeed * Time.deltaTime;
             }
             else
             {
-				creepDelayElapsed += creepDelaySpeed * Time.deltaTime;
+				raiseDelayElapsed += raiseDelaySpeed * Time.deltaTime;
 			}
 			
 			advance = true;
 		}
 		else
-		{*/
+		{
 			raiseDelayElapsed += raiseDelaySpeed * Time.deltaTime;
-        //}
+        }
 
         while (raiseDelayElapsed >= raiseDelayDuration)
         {
@@ -100,10 +116,10 @@ public class BlockRaiser : MonoBehaviour {
 					RaiseElapsed = RaiseDuration - 0.1f;
 				}
 				
-				/*if (advance && !Controller.AdvanceCommand)
+				if (advance && !advanceTriggered)
 				{
 					advance = false;
-				}*/
+				}
 			}
 		}
 	}
