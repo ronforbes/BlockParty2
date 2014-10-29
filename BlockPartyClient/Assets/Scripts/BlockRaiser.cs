@@ -5,16 +5,23 @@ public class BlockRaiser : MonoBehaviour {
 	public BlockManager BlockManager;
 	public Grid Grid;
 	public Game Game;
+
 	public float RaiseElapsed;
 	public const float RaiseDuration = 1.0f;
+
 	public int DyingBlockCount;
+
 	float raiseDelayElapsed;
 	float raiseDelaySpeed = 1.0f;
 	const float raiseDelayDuration = 1.0f;
+
 	float previousClickTime;
 	const float doubleClickSpeed = 0.5f;
+
 	bool advance, advanceTriggered;
 	const float advanceDelaySpeed = 100.0f;
+
+	bool maxHeightReached;
 
     // Use this for initialization
 	void Start () {
@@ -35,28 +42,10 @@ public class BlockRaiser : MonoBehaviour {
 			return;
 		}
 
-		/*if (creepFreeze)
+		if(Grid.IsMaxHeightReached())
 		{
-			if (!Grid.CheckSafeHeightViolation())
-				creepFreeze = false;
-			else
-			{
-				lossElapsed += Time.deltaTime;
-				
-				if (lossElapsed >= lossDuration)
-					Round.Lose();
-				
-				return;
-			}
+			return;
 		}
-		else
-		{
-			if (Grid.CheckSafeHeightViolation())
-			{
-				creepFreeze = true;
-				lossElapsed = 0.0f;
-            }
-        }*/
 
 		if (Input.GetMouseButtonDown(0))
 		{

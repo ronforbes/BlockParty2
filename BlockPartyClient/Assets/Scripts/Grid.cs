@@ -345,4 +345,9 @@ public class Grid : MonoBehaviour {
         
         return true;
     }
+
+	public bool IsMaxHeightReached()
+	{
+		return topEffectiveRow >= SafeHeight - 1;
+	}
 }
