@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Score : MonoBehaviour {
 	public int GameScore;
+	const int chainMultiplier = 100;
 
 	// Use this for initialization
 	void Start () {
@@ -11,7 +12,7 @@ public class Score : MonoBehaviour {
 
 	public void ReportChain(Chain chain)
 	{
-		GameScore += chain.Magnitude * 100;
+		GameScore += chain.Magnitude * chainMultiplier;
 	}
 
 	// Update is called once per frame
