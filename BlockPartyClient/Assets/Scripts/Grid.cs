@@ -26,12 +26,12 @@ public class GridElement
 public class MatchCheck
 {
 	public Block Block;
-	//public Chain Chain;
+	public Chain Chain;
 	
-	public MatchCheck(Block block/*, Chain chain*/)
+	public MatchCheck(Block block, Chain chain)
 	{
 		Block = block;
-		//Chain = chain;
+		Chain = chain;
 	}
 }
 
@@ -42,6 +42,7 @@ public class Grid : MonoBehaviour {
 	public const int Size = Width * Height;
 	public const int MinimumMatchLength = 3;
 	public BlockManager BlockManager;
+	public ChainDetector ChainDetector;
 	GridElement[,] grid = new GridElement[Grid.Width, Grid.Height];
 	List<MatchCheck> matchChecks = new List<MatchCheck>(BlockManager.BlockCapacity);
 	int topOccupiedRow = 0;
@@ -151,9 +152,9 @@ public class Grid : MonoBehaviour {
 		return BlockManager.Match(block, grid[x, y].Element as Block);
     }
 
-	public void RequestMatchCheck(Block block/*, Chain chain = null*/)
+	public void RequestMatchCheck(Block block, Chain chain = null)
 	{
-		matchChecks.Add(new MatchCheck(block/*, chain*/));
+		matchChecks.Add(new MatchCheck(block, chain));
 	}
 	
     // Update is called once per frame
@@ -167,8 +168,8 @@ public class Grid : MonoBehaviour {
 			if (check.Block.State != Block.BlockState.Idle)
 				continue;
 			
-			// use the block's combo, if it has one
-			CheckMatch(check.Block/*, check.Block.Chain != null ? check.Block.Chain : check.Chain*/);
+			// use the block's chain if it has one
+			CheckMatch(check.Block, check.Block.Chain != null ? check.Block.Chain : check.Chain);
 			
 			matchChecks.Remove(check);
 		}
@@ -206,7 +207,7 @@ public class Grid : MonoBehaviour {
         } while(flag);
     }
 
-	void CheckMatch(Block block/*, Chain chain*/)
+	void CheckMatch(Block block, Chain chain)
 	{
 		int x = block.X;
 		int y = block.Y;
@@ -273,21 +274,21 @@ public class Grid : MonoBehaviour {
 		
 		if (!horizontalPattern && !verticalPattern)
 		{
-			//block.EndChainInvolvement(chain);
+			block.EndChainInvolvement(chain);
 			return;
 		}
 		
-		/*if (chain == null)
+		if (chain == null)
 		{
-			chain = ChainManager.CreateChain();
-		}*/
+			chain = ChainDetector.CreateChain();
+		}
 		
 		// if pattern matches both directions
 		if (horizontalPattern && verticalPattern)
 			magnitude--;
 		
 		// kill the pattern's blocks and look for touching garbage
-		block.StartDying(/*chain*/);
+		block.StartDying(chain);
 		
 		if (horizontalPattern)
 		{
@@ -296,7 +297,7 @@ public class Grid : MonoBehaviour {
 			{
 				if (killX != x)
 				{
-					BlockAt(killX, y).StartDying(/*chain*/);
+					BlockAt(killX, y).StartDying(chain);
 				}
 			}
 		}
@@ -308,12 +309,12 @@ public class Grid : MonoBehaviour {
 			{
 				if (killY != y)
 				{
-					BlockAt(x, killY).StartDying(/*chain*/);
+					BlockAt(x, killY).StartDying(chain);
                 }
             }
         }
         
-        //chain.ReportMatch(magnitude, block);
+        chain.ReportMatch(magnitude, block);
     }
 
 	public bool ShiftUp()
@@ -346,7 +347,7 @@ public class Grid : MonoBehaviour {
         return true;
     }
 
-	public bool IsMaxHeightReached()
+	public bool IsMaximumHeightReached()
 	{
 		return topEffectiveRow >= SafeHeight - 1;
 	}

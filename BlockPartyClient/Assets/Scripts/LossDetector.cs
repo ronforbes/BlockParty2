@@ -23,7 +23,7 @@ public class LossDetector : MonoBehaviour {
 
 		if(maxHeightReached)
 		{
-			if (!Grid.IsMaxHeightReached())
+			if (!Grid.IsMaximumHeightReached())
 				maxHeightReached = false;
 			else
 			{
@@ -37,7 +37,7 @@ public class LossDetector : MonoBehaviour {
 		}
 		else
 		{
-			if (Grid.IsMaxHeightReached())
+			if (Grid.IsMaximumHeightReached())
 			{
 				maxHeightReached = true;
 				lossElapsed = 0.0f;

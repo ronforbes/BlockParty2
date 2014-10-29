@@ -31,6 +31,8 @@ public class Block : MonoBehaviour
 	public float DieElapsed;
 	public const float DieDuration = 1.5f;
 	public Vector2 DyingAxis;
+
+	public Chain Chain;
     
     // Use this for initialization
 	void Start ()
@@ -73,7 +75,7 @@ public class Block : MonoBehaviour
         grid.AddBlock(X, Y, this, GridElement.ElementState.Block);
     }
 
-	public void StartFalling(/*Chain chain = null*/)
+	public void StartFalling(Chain chain = null)
 	{
 		if (State != BlockState.Idle)
 			return;
@@ -85,24 +87,24 @@ public class Block : MonoBehaviour
 		
 		grid.ChangeState(X, Y, this, GridElement.ElementState.Falling);
 		
-		/*if (chain != null)
+		if (chain != null)
 		{
 			BeginChainInvolvement(chain);
-		}*/
+		}
 		
 		if (Y < Grid.Height - 1)
 		{
 			if (grid.StateAt(X, Y + 1) == GridElement.ElementState.Block)
-				grid.BlockAt(X, Y + 1).StartFalling(/*Chain*/);
+				grid.BlockAt(X, Y + 1).StartFalling(Chain);
         }
     }
 
-	public void StartDying(/*Chain chain*/)
+	public void StartDying(Chain chain)
 	{
 		// change the game state
 		blockRaiser.DyingBlockCount++;
 		
-		//BeginChainInvolvement(chain);
+		BeginChainInvolvement(chain);
 		
 		State = BlockState.Dying;
 		DieElapsed = 0.0f;
@@ -112,10 +114,30 @@ public class Block : MonoBehaviour
 		DyingAxis = Random.insideUnitCircle;
     }
 
-    // Update is called once per frame
-    void Update ()
-    {
-        // don't update the creep row
+	public void BeginChainInvolvement(Chain chain)
+	{
+		if (Chain != null)
+		{
+			Chain.DecrementInvolvement();
+		}
+		
+		Chain = chain;
+		Chain.IncrementInvolvement();
+	}
+	
+	public void EndChainInvolvement(Chain chain)
+	{
+		if (Chain != null && Chain == chain)
+		{
+			Chain.DecrementInvolvement();
+			Chain = null;
+		}
+	}
+
+	// Update is called once per frame
+	void Update ()
+	{
+		// don't update the creep row
         if (Y == 0)
             return;
         
@@ -178,10 +200,10 @@ public class Block : MonoBehaviour
 				if (Y < Grid.Height - 1)
 				{
 					if (grid.StateAt(X, Y + 1) == GridElement.ElementState.Block)
-						grid.BlockAt(X, Y + 1).StartFalling(/*Chain*/);
+						grid.BlockAt(X, Y + 1).StartFalling(Chain);
 				}
 				
-				//Chain.DecrementInvolvement();
+				Chain.DecrementInvolvement();
 				
 				//ParticleManager particleManager = FindObjectOfType<ParticleManager>();
                 //particleManager.CreateParticles(X, Y, Chain.Magnitude, Type);

@@ -42,7 +42,7 @@ public class BlockRaiser : MonoBehaviour {
 			return;
 		}
 
-		if(Grid.IsMaxHeightReached())
+		if(Grid.IsMaximumHeightReached())
 		{
 			return;
 		}
