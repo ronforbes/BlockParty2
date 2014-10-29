@@ -8,21 +8,21 @@ namespace BlockPartyServer
 	{
 		enum GameState
 		{
+			Lobby,
 			Game,
 			Results,
-			Leaderboard,
 		}
 
 		GameState state;
+
+		TimeSpan lobbyElapsed;
+		TimeSpan lobbyDuration = TimeSpan.FromSeconds(10);
 
 		TimeSpan gameElapsed;
 		TimeSpan gameDuration = TimeSpan.FromSeconds(10);
 
 		TimeSpan resultsElapsed;
 		TimeSpan resultsDuration = TimeSpan.FromSeconds(10);
-
-		TimeSpan leaderboardElapsed;
-		TimeSpan leaderboardDuration = TimeSpan.FromSeconds(10);
 
 		Timer updateTimer;
 		const int updatesPerSecond = 1;
@@ -39,7 +39,7 @@ namespace BlockPartyServer
 			updateTimer.Elapsed += Update;
 			updateTimer.Start();
 
-			SetGameState(GameState.Game);
+			SetGameState(GameState.Lobby);
 
 			while(true) { }
 		}
@@ -72,8 +72,8 @@ namespace BlockPartyServer
 				resultsElapsed = TimeSpan.Zero;
 				break;
 
-			case GameState.Leaderboard:
-				leaderboardElapsed = TimeSpan.Zero;
+			case GameState.Lobby:
+				lobbyElapsed = TimeSpan.Zero;
 				break;
 			}
 		}
@@ -84,6 +84,15 @@ namespace BlockPartyServer
 
 			switch(state)
 			{
+			case GameState.Lobby:
+				lobbyElapsed += gameTime.Elapsed;
+				
+				if(lobbyElapsed >= lobbyDuration)
+				{
+					SetGameState(GameState.Game);
+				}
+				break;
+
 			case GameState.Game:
 				gameElapsed += gameTime.Elapsed;
 				
@@ -98,16 +107,7 @@ namespace BlockPartyServer
 
 				if(resultsElapsed >= resultsDuration)
 				{
-					SetGameState(GameState.Leaderboard);
-				}
-				break;
-
-			case GameState.Leaderboard:
-				leaderboardElapsed += gameTime.Elapsed;
-
-				if(leaderboardElapsed >= leaderboardDuration)
-				{
-					SetGameState(GameState.Game);
+					SetGameState(GameState.Lobby);
 				}
 				break;
 			}

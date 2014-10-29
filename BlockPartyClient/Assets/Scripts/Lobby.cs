@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Leaderboard : MonoBehaviour {
+public class Lobby : MonoBehaviour {
 	bool serverGameStateChanged;
 
 	// Use this for initialization
@@ -28,6 +28,14 @@ public class Leaderboard : MonoBehaviour {
 		if(serverGameStateChanged)
 		{
 			Application.LoadLevel("Game");
+		}
+	}
+
+	void OnGUI()
+	{
+		if(GUI.Button(new Rect(10.0f, 10.0f, 50.0f, 50.0f), "Back"))
+		{
+			Application.LoadLevel("Menu");
 		}
 	}
 

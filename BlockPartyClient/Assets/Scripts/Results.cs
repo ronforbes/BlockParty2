@@ -17,7 +17,7 @@ public class Results : MonoBehaviour {
 	void networkingManager_MessageReceived (object sender, BlockPartyShared.MessageReceivedEventArgs e)
 	{
 		if(e.Message.Type == BlockPartyShared.NetworkMessage.MessageType.ServerGameState &&
-		   (string)e.Message.Content == "Leaderboard")
+		   (string)e.Message.Content == "Lobby")
 		{
 			serverGameStateChanged = true;
 		}
@@ -27,7 +27,7 @@ public class Results : MonoBehaviour {
 	void Update () {
 		if(serverGameStateChanged)
 		{
-			Application.LoadLevel("Leaderboard");
+			Application.LoadLevel("Lobby");
 		}
 	}
 
