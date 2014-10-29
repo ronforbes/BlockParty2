@@ -1,5 +1,6 @@
 using System;
 using System.Timers;
+using BlockPartyShared;
 
 namespace BlockPartyServer
 {
@@ -28,8 +29,12 @@ namespace BlockPartyServer
 
 		GameTime gameTime = new GameTime();
 
+		NetworkingManager networkingManager = new NetworkingManager();
+
 		public Game()
 		{
+			networkingManager.MessageReceived += networkingManager_MessageReceived;
+
 			updateTimer = new Timer(1000.0f / updatesPerSecond);
 			updateTimer.Elapsed += Update;
 			updateTimer.Start();
@@ -39,10 +44,23 @@ namespace BlockPartyServer
 			while(true) { }
 		}
 
+		void networkingManager_MessageReceived(object sender, MessageReceivedEventArgs e)
+		{
+			switch(e.Message.Type)
+			{
+			case NetworkMessage.MessageType.ClientResults:
+				//GameResults.Add(e.Sender, (int)e.Message.Content);
+				break;
+			}
+		}
+
 		void SetGameState(GameState state)
 		{
 			Console.WriteLine("Setting game state to " + state.ToString());
 			this.state = state;
+
+			NetworkMessage message = new NetworkMessage(NetworkMessage.MessageType.ServerGameState, state.ToString());
+			networkingManager.Broadcast(message);
 
 			switch(state)
 			{
