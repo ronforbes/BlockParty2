@@ -3,6 +3,7 @@ Builds/
 Library/
 Temp/
 *.csproj
+*.unityproj
 *.sln
 
 # MonoDevelop

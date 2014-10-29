@@ -15,6 +15,14 @@ public static class NetworkingManager
 
 	public static event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
+	public static bool Connected
+	{
+		get
+		{
+			return client != null && client.Connected;
+		}
+	}
+
 	public static void Connect()
 	{
 		client = new TcpClient(hostname, port);
