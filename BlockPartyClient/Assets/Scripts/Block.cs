@@ -12,17 +12,22 @@ public class Block : MonoBehaviour
 	}
 
 	public int X, Y;
+
 	public int Type;
 	public const int TypeCount = 5;
+
 	public BlockState State;
 	BlockManager blockManager;
 	Grid grid;
 	BlockRaiser blockRaiser;
+
 	public BlockSlider.SlideDirection Direction;
 	public bool SlideFront;
+
 	bool startedFalling;
 	public float FallElapsed;
 	public const float FallDuration = 0.1f;
+
 	public float DieElapsed;
 	public const float DieDuration = 1.5f;
 	public Vector2 DyingAxis;

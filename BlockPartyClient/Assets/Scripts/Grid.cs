@@ -38,7 +38,7 @@ public class MatchCheck
 public class Grid : MonoBehaviour {
 	public const int Width = 6;
 	public const int Height = 45;
-	public const int SafeHeight = 12;
+	public const int SafeHeight = 11;
 	public const int Size = Width * Height;
 	public const int MinimumMatchLength = 3;
 	public BlockManager BlockManager;

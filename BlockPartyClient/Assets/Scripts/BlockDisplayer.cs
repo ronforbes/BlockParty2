@@ -5,9 +5,12 @@ public class BlockDisplayer : MonoBehaviour {
 	public Block Block;
 	BlockSlider slider;
 	BlockRaiser raiser;
+
 	Color[] colors = new Color[Block.TypeCount];
 	Color[] newColors = new Color[Block.TypeCount];
+
 	const float gridElementLength = 1.0f;
+
 	const float dyingFlashDuration = 0.2f;
 	const float dyingSpeed = 1000;
 	Color flashColor = new Color(1.0f, 1.0f, 1.0f);

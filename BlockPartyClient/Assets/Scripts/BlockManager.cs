@@ -6,6 +6,7 @@ public class BlockManager : MonoBehaviour {
 	public Block BlockPrefab;
 	public List<Block> Blocks = new List<Block>(BlockCapacity);
 	public const int BlockCapacity = Grid.Size;
+
 	public List<int> LastNewRowTypes = new List<int>(Grid.Width);
 	public List<int> SecondToLastNewRowTypes = new List<int>(Grid.Width);
 	int lastNewBlockType = 0, secondToLastNewBlockType = 0;
