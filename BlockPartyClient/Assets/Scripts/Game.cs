@@ -13,6 +13,8 @@ public class Game : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		NetworkingManager.Connect();
+
 		State = GameState.Gameplay;
 	}
 
@@ -24,5 +26,10 @@ public class Game : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
+	}
+
+	void OnApplicationQuit()
+	{
+		NetworkingManager.Disconnect();
 	}
 }
