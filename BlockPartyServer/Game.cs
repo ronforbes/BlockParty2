@@ -1,6 +1,9 @@
 using System;
 using System.Timers;
 using BlockPartyShared;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 
 namespace BlockPartyServer
 {
@@ -30,6 +33,9 @@ namespace BlockPartyServer
 		GameTime gameTime = new GameTime();
 
 		NetworkingManager networkingManager = new NetworkingManager();
+		UserManager userManager = new UserManager();
+
+		Dictionary<string, int> gameResults = new Dictionary<string, int>();
 
 		public Game()
 		{
@@ -40,16 +46,17 @@ namespace BlockPartyServer
 			updateTimer.Start();
 
 			SetGameState(GameState.Lobby);
-
-			while(true) { }
 		}
 
 		void networkingManager_MessageReceived(object sender, MessageReceivedEventArgs e)
 		{
 			switch(e.Message.Type)
 			{
+			case NetworkMessage.MessageType.ClientFacebookId:
+				userManager.Users.Add((string)e.Message.Content, new User((string)e.Message.Content, e.Sender));
+				break;
 			case NetworkMessage.MessageType.ClientResults:
-				//GameResults.Add(e.Sender, (int)e.Message.Content);
+				gameResults.Add(userManager.GetUserByTcpClient(e.Sender).Name, (int)e.Message.Content);
 				break;
 			}
 		}
@@ -66,6 +73,7 @@ namespace BlockPartyServer
 			{
 			case GameState.Game:
 				gameElapsed = TimeSpan.Zero;
+				gameResults.Clear();
 				break;
 
 			case GameState.Results:
@@ -74,6 +82,18 @@ namespace BlockPartyServer
 
 			case GameState.Lobby:
 				lobbyElapsed = TimeSpan.Zero;
+
+				Console.WriteLine("gameResults.Count=" + gameResults.Count);
+				List<KeyValuePair<string, int>> sortedGameResults = gameResults.ToList();
+				sortedGameResults.Sort((firstPair, nextPair) => { return firstPair.Value.CompareTo(nextPair) * -1; });
+				Console.WriteLine("sortedGameResults.Count=" + sortedGameResults.Count);
+				if(sortedGameResults.Count > 0)
+				{
+					Console.WriteLine("Game winner is " + sortedGameResults[0].Key + " with score " + sortedGameResults[0].Value);
+					
+					networkingManager.Broadcast(new NetworkMessage(NetworkMessage.MessageType.ServerLeaderboard, sortedGameResults));
+				}
+
 				break;
 			}
 		}
@@ -111,6 +131,11 @@ namespace BlockPartyServer
 				}
 				break;
 			}
+		}
+
+		public void Run()
+		{
+			while(true) { }
 		}
 	}
 }

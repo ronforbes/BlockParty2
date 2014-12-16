@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using BlockPartyShared;
 
 public class Game : MonoBehaviour {
 	public enum GameState
@@ -10,6 +11,7 @@ public class Game : MonoBehaviour {
 	}
 
 	public GameState State;
+	public Score Score;
 
 	bool serverGameStateChanged;
 
@@ -30,6 +32,8 @@ public class Game : MonoBehaviour {
 		if(e.Message.Type == BlockPartyShared.NetworkMessage.MessageType.ServerGameState &&
 		   (string)e.Message.Content == "Results")
 		{
+			NetworkingManager.Send(new NetworkMessage(NetworkMessage.MessageType.ClientResults, Score.GameScore));
+			ScoreManager.LatestScore = Score.GameScore;
 			serverGameStateChanged = true;
 		}
 	}
@@ -43,6 +47,7 @@ public class Game : MonoBehaviour {
 	void Update () {
 		if(serverGameStateChanged)
 		{
+			NetworkingManager.MessageReceived -= networkingManager_MessageReceived;
 			Application.LoadLevel("Results");
 		}
 	}

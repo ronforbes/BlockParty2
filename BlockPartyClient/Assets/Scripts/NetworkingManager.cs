@@ -39,6 +39,8 @@ public static class NetworkingManager
 				Thread receiveThread = new Thread(Receive);
 				receiveThread.Start();
 			}
+
+			Send (new NetworkMessage(NetworkMessage.MessageType.ClientFacebookId, UserManager.FacebookId));
 		}
 	}
 

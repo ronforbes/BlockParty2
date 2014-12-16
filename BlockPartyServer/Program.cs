@@ -8,7 +8,7 @@ namespace BlockPartyServer
 
 		public static void Main (string[] args)
 		{
-
+			game.Run();
 		}
 	}
 }

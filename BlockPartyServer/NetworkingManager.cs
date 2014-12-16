@@ -72,12 +72,12 @@ namespace BlockPartyServer
 					// process message
 					MessageReceivedEventArgs args = new MessageReceivedEventArgs();
 					args.Message = message;
-					args.Sender = client.Client.RemoteEndPoint.ToString();
+					args.Sender = client;
 					OnMessageReceived(args);
 				}
 				catch(IOException e)
 				{
-					Console.WriteLine("Client disconnected from {0}", client.Client.RemoteEndPoint.ToString());
+					Console.WriteLine("Client disconnected from {0} (Exception: {1})", client.Client.RemoteEndPoint.ToString(), e.ToString());
 					clients.Remove(client);
 					client.Close();
 					return;

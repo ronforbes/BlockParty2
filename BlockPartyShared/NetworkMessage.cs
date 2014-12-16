@@ -1,4 +1,5 @@
 using System;
+using System.Net.Sockets;
 
 namespace BlockPartyShared
 {
@@ -9,6 +10,7 @@ namespace BlockPartyShared
 		{
 			ServerGameState,
 			ServerLeaderboard,
+			ClientFacebookId,
 			ClientResults
 		}
 		
@@ -31,7 +33,7 @@ namespace BlockPartyShared
 	{
 		public NetworkMessage Message { get; set; }
 		
-		public string Sender { get; set; }
+		public TcpClient Sender { get; set; }
 	}
 }
 
