@@ -40,7 +40,7 @@ public static class NetworkingManager
 				receiveThread.Start();
 			}
 
-			Send (new NetworkMessage(NetworkMessage.MessageType.ClientFacebookId, UserManager.FacebookId));
+			Send (new NetworkMessage(NetworkMessage.MessageType.ClientCreateUser, UserManager.Name));
 		}
 	}
 

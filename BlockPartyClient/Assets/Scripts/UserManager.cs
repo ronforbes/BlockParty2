@@ -54,12 +54,11 @@ public static class UserManager
 		Name = dictionary["name"] as string;
 		FacebookId = dictionary["id"] as string;
 
-		GetProfilePicture();
+		Debug.Log(Name + " (" + FacebookId + ")");
 	}
 
-	static IEnumerator GetProfilePicture()
+	public static void SetProfilePicture(Texture2D texture)
 	{
-		WWW www = new WWW("https://graph.facebook.com/" + FacebookId + "/picture");
-		yield return www;
+
 	}
 }

@@ -10,7 +10,7 @@ namespace BlockPartyShared
 		{
 			ServerGameState,
 			ServerLeaderboard,
-			ClientFacebookId,
+			ClientCreateUser,
 			ClientResults
 		}
 		

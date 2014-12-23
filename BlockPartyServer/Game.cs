@@ -52,7 +52,7 @@ namespace BlockPartyServer
 		{
 			switch(e.Message.Type)
 			{
-			case NetworkMessage.MessageType.ClientFacebookId:
+			case NetworkMessage.MessageType.ClientCreateUser:
 				userManager.Users.Add((string)e.Message.Content, new User((string)e.Message.Content, e.Sender));
 				break;
 			case NetworkMessage.MessageType.ClientResults:

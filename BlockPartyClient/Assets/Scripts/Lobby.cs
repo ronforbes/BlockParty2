@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class Lobby : MonoBehaviour {
 	bool serverGameStateChanged;
+	public GUIText UserText;
+	public GUITexture UserPictureTexture;
 	public GUIText RankText;
 	public GUIText NameText;
 	public GUIText ScoreText;
@@ -17,10 +19,8 @@ public class Lobby : MonoBehaviour {
 		
 		NetworkingManager.MessageReceived += networkingManager_MessageReceived;
 
-		if(UserManager.Initialized)
-		{
-			Debug.Log(UserManager.Name);
-		}
+		UserText.text = UserManager.Name;
+		StartCoroutine("LoadProfilePicture", UserPictureTexture);
 	}
 	
 	void networkingManager_MessageReceived (object sender, BlockPartyShared.MessageReceivedEventArgs e)
@@ -36,7 +36,17 @@ public class Lobby : MonoBehaviour {
 			ScoreManager.SortedGameResults = (List<KeyValuePair<string, int>>)e.Message.Content;
 		}
 	}
-	
+
+	IEnumerator LoadProfilePicture(GUITexture guiTexture)
+	{
+		WWW www = new WWW("https://graph.facebook.com/me/picture?access_token=" + FB.AccessToken);
+		yield return www;
+		Debug.Log(www.bytes);
+		Texture2D texture = new Texture2D(128, 128, TextureFormat.DXT1, false);
+		guiTexture.texture = texture;
+		www.LoadImageIntoTexture(texture);
+	}
+
 	// Update is called once per frame
 	void Update () {
 		if(ScoreManager.SortedGameResults != null)
