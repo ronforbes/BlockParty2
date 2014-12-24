@@ -134,9 +134,9 @@ public class BlockSlider : MonoBehaviour
 			if (!slideDisallowed)
 			{
 				if (leftBlock)
-					leftBlock.StartSliding(SlideDirection.Right, leftBlock == Grid.BlockAt(selectedBlock.X, selectedBlock.Y));
+					leftBlock.GetComponent<BlockSliding>().StartSliding(SlideDirection.Right);
 				if (rightBlock)
-					rightBlock.StartSliding(SlideDirection.Left, rightBlock == Grid.BlockAt(selectedBlock.X, selectedBlock.Y));
+					rightBlock.GetComponent<BlockSliding>().StartSliding(SlideDirection.Left);
 				
 				if (leftBlock || rightBlock)
 				{
@@ -170,9 +170,9 @@ public class BlockSlider : MonoBehaviour
 					Grid.Remove(rightBlock.X, rightBlock.Y, rightBlock);
 				
 				if (leftBlock)
-					leftBlock.FinishSliding(leftBlock.X + 1);
+					leftBlock.GetComponent<BlockSliding>().FinishSliding(leftBlock.X + 1);
 				if (rightBlock)
-					rightBlock.FinishSliding(rightBlock.X - 1);
+					rightBlock.GetComponent<BlockSliding>().FinishSliding(rightBlock.X - 1);
 				
 				if (leftBlock)
 				{

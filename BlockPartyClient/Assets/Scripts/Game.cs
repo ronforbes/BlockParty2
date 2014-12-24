@@ -19,7 +19,7 @@ public class Game : MonoBehaviour {
 	void Start () {
 		if(!NetworkingManager.Connected)
 		{
-			NetworkingManager.Connect();
+			//NetworkingManager.Connect();
 		}
 
 		NetworkingManager.MessageReceived += networkingManager_MessageReceived;

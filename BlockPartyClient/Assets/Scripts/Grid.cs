@@ -163,15 +163,14 @@ public class Grid : MonoBehaviour {
 		while (matchChecks.Count > 0)
 		{
 			MatchCheck check = matchChecks[0];
-			
+			matchChecks.Remove(check);
+
 			// ensure that the block is still static
 			if (check.Block.State != Block.BlockState.Idle)
 				continue;
 			
 			// use the block's chain if it has one
-			CheckMatch(check.Block, check.Block.Chain != null ? check.Block.Chain : check.Chain);
-			
-			matchChecks.Remove(check);
+			CheckMatch(check.Block, check.Block.GetComponent<BlockChaining>().Chain != null ? check.Block.GetComponent<BlockChaining>().Chain : check.Chain);
 		}
 		
 		// update top occupied row
@@ -274,7 +273,7 @@ public class Grid : MonoBehaviour {
 		
 		if (!horizontalPattern && !verticalPattern)
 		{
-			block.EndChainInvolvement(chain);
+			block.GetComponent<BlockChaining>().EndChainInvolvement(chain);
 			return;
 		}
 		
@@ -288,7 +287,7 @@ public class Grid : MonoBehaviour {
 			magnitude--;
 		
 		// kill the pattern's blocks and look for touching garbage
-		block.StartDying(chain);
+		block.GetComponent<BlockDying>().StartDying(chain);
 		
 		if (horizontalPattern)
 		{
@@ -297,7 +296,7 @@ public class Grid : MonoBehaviour {
 			{
 				if (killX != x)
 				{
-					BlockAt(killX, y).StartDying(chain);
+					BlockAt(killX, y).GetComponent<BlockDying>().StartDying(chain);
 				}
 			}
 		}
@@ -309,7 +308,7 @@ public class Grid : MonoBehaviour {
 			{
 				if (killY != y)
 				{
-					BlockAt(x, killY).StartDying(chain);
+					BlockAt(x, killY).GetComponent<BlockDying>().StartDying(chain);
                 }
             }
         }

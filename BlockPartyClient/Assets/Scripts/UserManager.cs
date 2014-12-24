@@ -7,7 +7,7 @@ public static class UserManager
 {
 	static bool initialized;
 	static bool loggedIn;
-	public static string Name;
+	public static string Name = "Guest";
 	public static string FacebookId;
 
 	public static bool Initialized
